@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <!-- Codificação e compatibilidade -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convite Helena</title>
+
+  <style>
+    /* ========================================
+       Reset global e box-sizing
+    ======================================== */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ========================================
+       Corpo: fundo preto, sem rolagem,
+       centralização total via flexbox
+    ======================================== */
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* ========================================
+       Vídeo: responsivo, sem distorção,
+       limitado aos limites da tela
+    ======================================== */
+    video {
+      max-width: 100%;
+      max-height: 100vh;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* ========================================
+       Ícone de "toque para ativar o som"
+    ======================================== */
+    #sound-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.4);
+      justify-content: center;
+      align-items: center;
+    }
+
+    #sound-overlay .icon {
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    #sound-overlay .icon svg {
+      width: 36px;
+      height: 36px;
+      fill: #fff;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Overlay: toque para ativar o som -->
+  <div id="sound-overlay">
+    <div class="icon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Player de vídeo sem controles visíveis -->
+  <video id="video" playsinline preload="auto" autoplay>
+    <!-- Formato principal -->
+    <source src="static/video.mp4" type="video/mp4">
+    <!-- Formatos alternativos (fallback) -->
+    <source src="static/video.webm" type="video/webm">
+    <source src="static/video.ogg" type="video/ogg">
+    <!-- Mensagem para navegadores sem suporte -->
+    Seu navegador não suporta a reprodução de vídeos HTML5.
+  </video>
+
+  <script>
+    var video = document.getElementById('video');
+    var overlay = document.getElementById('sound-overlay');
+
+    // Tenta reproduzir COM som primeiro
+    video.muted = false;
+    var playAttempt = video.play();
+
+    if (playAttempt !== undefined) {
+      playAttempt.then(function() {
+        // Sucesso! Áudio funcionou sem interação
+        overlay.style.display = 'none';
+      }).catch(function() {
+        // Navegador bloqueou — inicia mutado e mostra o overlay
+        video.muted = true;
+        video.play();
+        overlay.style.display = 'flex';
+
+        // Ao tocar/clicar, ativa o som e esconde o overlay
+        function enableSound() {
+          video.muted = false;
+          overlay.style.display = 'none';
+          document.removeEventListener('click', enableSound);
+          document.removeEventListener('touchstart', enableSound);
+        }
+
+        document.addEventListener('click', enableSound);
+        document.addEventListener('touchstart', enableSound);
+      });
+    }
+  </script>
+
+</body>
+
+</html>
