@@ -10,26 +10,15 @@
   <title>Convite Helena</title>
 
   <style>
-    /* ========================================
-       Reset global e box-sizing
-    ======================================== */
-    *,
-    *::before,
-    *::after {
+    /* Reset global */
+    *, *::before, *::after {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    /* ========================================
-       Corpo: fundo escuro, sem rolagem,
-       centralização total via flexbox.
-       Usa background gradient para evitar
-       tela 100% preta em dispositivos que
-       demoram a carregar o vídeo.
-    ======================================== */
-    html,
-    body {
+    /* Corpo: centralizado, sem scroll */
+    html, body {
       width: 100%;
       height: 100%;
       background: #0a0a0a;
@@ -37,16 +26,12 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      /* Previne seleção acidental e zoom */
       -webkit-tap-highlight-color: transparent;
       -webkit-touch-callout: none;
       user-select: none;
     }
 
-    /* ========================================
-       Container do vídeo: garante que o
-       vídeo esteja sempre visível
-    ======================================== */
+    /* Container do vídeo */
     .video-container {
       position: relative;
       width: 100%;
@@ -57,12 +42,7 @@
       background: #0a0a0a;
     }
 
-    /* ========================================
-       Vídeo: responsivo, sem distorção,
-       limitado aos limites da tela.
-       Adicionado background para evitar
-       frame preto antes do carregamento.
-    ======================================== */
+    /* Vídeo responsivo */
     video {
       max-width: 100%;
       max-height: 100vh;
@@ -74,10 +54,7 @@
       background: #0a0a0a;
     }
 
-    /* ========================================
-       Indicador de carregamento: aparece
-       enquanto o vídeo não está pronto
-    ======================================== */
+    /* Loading spinner */
     .loading-indicator {
       position: fixed;
       top: 50%;
@@ -88,7 +65,7 @@
       flex-direction: column;
       align-items: center;
       gap: 16px;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.4s ease;
     }
 
     .loading-indicator.hidden {
@@ -115,9 +92,7 @@
       to { transform: rotate(360deg); }
     }
 
-    /* ========================================
-       Overlay: toque para ativar o som
-    ======================================== */
+    /* Overlay para ativar som */
     #sound-overlay {
       display: none;
       position: fixed;
@@ -127,10 +102,9 @@
       height: 100%;
       z-index: 10;
       cursor: pointer;
-      background: rgba(0, 0, 0, 0.45);
+      background: rgba(0, 0, 0, 0.35);
       justify-content: center;
       align-items: center;
-      /* Previne clique duplo causar zoom */
       touch-action: manipulation;
     }
 
@@ -145,7 +119,6 @@
       justify-content: center;
       align-items: center;
       animation: pulse 1.5s ease-in-out infinite;
-      /* Evita que o ícone capture o clique separadamente */
       pointer-events: none;
     }
 
@@ -164,7 +137,7 @@
       font-size: 14px;
       letter-spacing: 0.5px;
       pointer-events: none;
-      animation: fadeInUp 1s ease forwards;
+      animation: fadeInUp 0.8s ease forwards;
     }
 
     @keyframes pulse {
@@ -173,27 +146,21 @@
     }
 
     @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Indicador de carregamento -->
+  <!-- Loading -->
   <div class="loading-indicator" id="loading">
     <div class="spinner"></div>
     <span class="loading-text">Carregando...</span>
   </div>
 
-  <!-- Overlay: toque para ativar o som -->
+  <!-- Overlay de som -->
   <div id="sound-overlay">
     <div class="icon">
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -203,23 +170,25 @@
     <span class="hint">Toque para ativar o som 🔊</span>
   </div>
 
-  <!-- Container do vídeo -->
+  <!-- Vídeo -->
   <div class="video-container">
-    <!-- Player de vídeo sem controles visíveis -->
+    <!--
+      autoplay + muted + playsinline = reprodução INSTANTÂNEA
+      em TODOS os navegadores e dispositivos modernos.
+      Navegadores exigem "muted" para permitir autoplay sem interação.
+    -->
     <video id="video"
+      autoplay
+      muted
       playsinline
       webkit-playsinline
       preload="auto"
-      muted
       x-webkit-airplay="deny"
       disablePictureInPicture
       disableRemotePlayback>
-      <!-- Formato principal -->
       <source src="static/video.mp4" type="video/mp4">
-      <!-- Formatos alternativos (fallback) -->
       <source src="static/video.webm" type="video/webm">
       <source src="static/video.ogg" type="video/ogg">
-      <!-- Mensagem para navegadores sem suporte -->
       Seu navegador não suporta a reprodução de vídeos HTML5.
     </video>
   </div>
@@ -232,61 +201,46 @@
       var overlay = document.getElementById('sound-overlay');
       var loading = document.getElementById('loading');
       var soundEnabled = false;
-      var isProcessingClick = false;
+      var clickLock = false;
 
-      // ========================================
-      // Esconde o loading quando o vídeo estiver
-      // pronto para reproduzir
-      // ========================================
+      // ==========================================
+      // LOADING: esconde assim que o vídeo começa
+      // ==========================================
       function hideLoading() {
-        if (loading) {
+        if (loading && !loading.classList.contains('hidden')) {
           loading.classList.add('hidden');
-          // Remove do DOM após a transição
           setTimeout(function () {
-            if (loading.parentNode) {
-              loading.parentNode.removeChild(loading);
-            }
-          }, 600);
+            if (loading.parentNode) loading.parentNode.removeChild(loading);
+          }, 500);
         }
       }
 
-      // Esconde loading quando o vídeo pode tocar
-      video.addEventListener('canplay', hideLoading);
       video.addEventListener('playing', hideLoading);
+      video.addEventListener('canplay', hideLoading);
+      setTimeout(hideLoading, 4000); // fallback
 
-      // Fallback: esconde loading após 5 segundos
-      setTimeout(hideLoading, 5000);
-
-      // ========================================
-      // Função para ativar o som com segurança
-      // Impede cliques duplos e conflitos
-      // ========================================
+      // ==========================================
+      // OVERLAY: ativa o som ao clicar/tocar
+      // ==========================================
       function enableSound(e) {
-        // Previne propagação e comportamento padrão
         if (e) {
           e.preventDefault();
           e.stopPropagation();
           e.stopImmediatePropagation();
         }
 
-        // Evita processar múltiplos cliques
-        if (isProcessingClick || soundEnabled) return;
-        isProcessingClick = true;
+        if (clickLock || soundEnabled) return;
+        clickLock = true;
 
-        // Ativa o som
         video.muted = false;
         soundEnabled = true;
 
-        // Garante que o vídeo continue tocando
-        // (não pausa ao clicar)
+        // Garante que continua tocando (não pausa)
         if (video.paused) {
-          video.play().catch(function () {
-            // Se falhar, pelo menos tenta com som
-            video.muted = false;
-          });
+          video.play().catch(function () {});
         }
 
-        // Esconde o overlay com transição suave
+        // Fade out suave do overlay
         overlay.style.transition = 'opacity 0.3s ease';
         overlay.style.opacity = '0';
         setTimeout(function () {
@@ -295,149 +249,119 @@
           overlay.style.transition = '';
         }, 300);
 
-        // Remove os event listeners
+        // Remove listeners
         overlay.removeEventListener('click', enableSound);
         overlay.removeEventListener('touchend', enableSound);
 
-        // Reseta o flag após um breve delay
-        setTimeout(function () {
-          isProcessingClick = false;
-        }, 500);
+        setTimeout(function () { clickLock = false; }, 500);
       }
 
-      // ========================================
-      // Estratégia de reprodução:
-      // 1. Começa mutado (melhor compatibilidade)
-      // 2. Tenta reproduzir
-      // 3. Se conseguir com som, ótimo
-      // 4. Se não, mostra overlay para o usuário
-      // ========================================
-      function initVideo() {
-        // Sempre começa mutado para máxima compatibilidade
-        video.muted = true;
-
-        var playPromise = video.play();
-
-        if (playPromise !== undefined) {
-          playPromise.then(function () {
-            // Vídeo está tocando (mutado)
-            // Tenta ativar o som automaticamente
-            video.muted = false;
-
-            // Verifica se o som realmente ativou
-            // Em alguns dispositivos, setar muted = false
-            // não funciona sem interação do usuário
-            setTimeout(function () {
-              if (video.muted) {
-                // Som não ativou — mostra overlay
-                showOverlay();
-              } else {
-                // Som ativou com sucesso!
-                soundEnabled = true;
-                overlay.style.display = 'none';
-              }
-            }, 100);
-
-          }).catch(function () {
-            // Não conseguiu reproduzir nem mutado
-            // Tenta novamente com interação
-            showOverlay();
-
-            // Adiciona listener para iniciar com qualquer toque
-            function startOnInteraction(e) {
-              e.preventDefault();
-              e.stopPropagation();
-              video.muted = true;
-              video.play().then(function () {
-                // Começou a tocar, agora tenta ativar o som
-                enableSound(e);
-              }).catch(function () {
-                // Ignora — algumas situações extremas
-              });
-              document.removeEventListener('touchstart', startOnInteraction);
-              document.removeEventListener('click', startOnInteraction);
-            }
-
-            document.addEventListener('touchstart', startOnInteraction, { once: true });
-            document.addEventListener('click', startOnInteraction, { once: true });
-          });
-        } else {
-          // Navegador antigo que não retorna Promise
-          // Mostra overlay por segurança
-          showOverlay();
-        }
-      }
-
-      // ========================================
-      // Mostra o overlay de "toque para som"
-      // ========================================
-      function showOverlay() {
+      function showSoundOverlay() {
         video.muted = true;
         overlay.style.display = 'flex';
-
-        // Usa touchend ao invés de touchstart para
-        // evitar conflitos com scroll
         overlay.addEventListener('touchend', enableSound, { passive: false });
         overlay.addEventListener('click', enableSound);
       }
 
-      // ========================================
-      // Tratamento de erros do vídeo
-      // ========================================
-      video.addEventListener('error', function () {
-        hideLoading();
-        // Tenta recarregar uma vez
-        var currentSrc = video.querySelector('source').getAttribute('src');
-        if (currentSrc.indexOf('?') === -1) {
-          video.querySelector('source').setAttribute('src', currentSrc + '?t=' + Date.now());
-          video.load();
-          video.play().catch(function () { });
+      // ==========================================
+      // REPRODUÇÃO INSTANTÂNEA
+      //
+      // Estratégia:
+      // 1. O vídeo já tem autoplay + muted no HTML
+      //    → Isso faz o navegador iniciar IMEDIATAMENTE
+      // 2. Depois que está tocando, tentamos tirar mute
+      // 3. Se o navegador bloquear o som, mostramos overlay
+      // ==========================================
+      function initVideo() {
+        // O vídeo já deve estar tocando por causa do
+        // autoplay + muted no HTML. Mas garantimos:
+        if (video.paused) {
+          video.muted = true;
+          var p = video.play();
+          if (p && p.catch) p.catch(function () {});
         }
-      });
 
-      // ========================================
-      // Garante que o vídeo reinicia se parar
-      // inesperadamente (ex: perda de foco)
-      // ========================================
-      document.addEventListener('visibilitychange', function () {
-        if (!document.hidden && video.paused && soundEnabled) {
-          video.play().catch(function () { });
+        // Aguarda o vídeo começar a tocar de fato
+        function onPlaying() {
+          video.removeEventListener('playing', onPlaying);
+          hideLoading();
+          tryUnmute();
         }
-      });
 
-      // ========================================
-      // Previne que toques no vídeo pausem
-      // a reprodução
-      // ========================================
+        if (!video.paused && video.readyState >= 2) {
+          // Já está tocando!
+          hideLoading();
+          tryUnmute();
+        } else {
+          video.addEventListener('playing', onPlaying);
+        }
+      }
+
+      // Tenta ativar o som automaticamente
+      function tryUnmute() {
+        video.muted = false;
+
+        // Alguns navegadores revertem o muted silenciosamente
+        setTimeout(function () {
+          if (video.muted) {
+            // Navegador bloqueou — mostra overlay
+            showSoundOverlay();
+          } else {
+            // Som ativou sem interação — sucesso!
+            soundEnabled = true;
+          }
+        }, 150);
+      }
+
+      // ==========================================
+      // PROTEÇÕES
+      // ==========================================
+
+      // Previne clique no vídeo pausar
       video.addEventListener('click', function (e) {
         e.preventDefault();
-        if (video.paused) {
-          video.play().catch(function () { });
-        }
+        if (video.paused) video.play().catch(function () {});
       });
 
-      video.addEventListener('touchstart', function (e) {
-        // Não previne default aqui para manter scroll
-        // Apenas garante que não pause
-      });
-
+      // Se o vídeo pausar sozinho, retoma
       video.addEventListener('pause', function () {
-        // Se o vídeo pausar e não deveria, retoma
-        if (soundEnabled && !document.hidden) {
+        if (!document.hidden) {
           setTimeout(function () {
             if (video.paused && !document.hidden) {
-              video.play().catch(function () { });
+              video.play().catch(function () {});
             }
           }, 100);
         }
       });
 
-      // ========================================
-      // Inicia tudo quando o DOM estiver pronto
-      // ========================================
+      // Retoma ao voltar para a aba
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden && video.paused) {
+          video.play().catch(function () {});
+        }
+      });
+
+      // Tratamento de erro — tenta recarregar
+      video.addEventListener('error', function () {
+        hideLoading();
+        var src = video.querySelector('source');
+        if (src) {
+          var currentSrc = src.getAttribute('src');
+          if (currentSrc.indexOf('?') === -1) {
+            src.setAttribute('src', currentSrc + '?t=' + Date.now());
+            video.load();
+            video.play().catch(function () {});
+          }
+        }
+      });
+
+      // ==========================================
+      // INÍCIO
+      // ==========================================
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initVideo);
       } else {
+        // Página já carregou — inicia agora
         initVideo();
       }
     })();
