@@ -18,74 +18,27 @@
     html, body {
       width: 100%;
       height: 100%;
-      background: #0a0a0a;
+      background: #000;
       overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-touch-callout: none;
-      user-select: none;
     }
 
-    .canva-container {
-      position: relative;
-      width: 100%;
-      height: 0;
-      padding-top: 177.7778%;
-      padding-bottom: 0;
-      box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16);
-      overflow: hidden;
-      border-radius: 8px;
-      will-change: transform;
-    }
-
-    .canva-container iframe {
-      position: absolute;
-      width: 100%;
-      height: 100%;
+    iframe {
+      position: fixed;
       top: 0;
       left: 0;
-      border: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .canva-credit {
-      position: fixed;
-      bottom: 8px;
       width: 100%;
-      text-align: center;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    .canva-credit a {
-      color: rgba(255, 255, 255, 0.7);
-      text-decoration: none;
-    }
-
-    .canva-credit a:hover {
-      text-decoration: underline;
+      height: 100%;
+      border: none;
     }
   </style>
 </head>
 
 <body>
-
-  <div class="canva-container">
-    <iframe loading="lazy"
-      src="https://www.canva.com/design/DAHENx9ZWVU/qVDrCYPLwO1Wuie-z-vOvw/watch?embed&autoplay=1"
-      allowfullscreen="allowfullscreen"
-      allow="fullscreen; autoplay">
-    </iframe>
-  </div>
-
-  <p class="canva-credit">
-    <a href="https://www.canva.com/design/DAHENx9ZWVU/qVDrCYPLwO1Wuie-z-vOvw/watch?utm_content=DAHENx9ZWVU&utm_campaign=designshare&utm_medium=embeds&utm_source=link" target="_blank" rel="noopener">Início</a> de Danniell
-  </p>
-
+  <iframe
+    src="https://www.canva.com/design/DAHENx9ZWVU/qVDrCYPLwO1Wuie-z-vOvw/watch?embed&autoplay=1"
+    allowfullscreen="allowfullscreen"
+    allow="fullscreen; autoplay">
+  </iframe>
 </body>
 
 </html>
