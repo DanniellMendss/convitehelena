@@ -2,7 +2,6 @@
 <html lang="pt-BR">
 
 <head>
-  <!-- Codificação e compatibilidade -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -10,14 +9,12 @@
   <title>Convite Helena</title>
 
   <style>
-    /* Reset global */
     *, *::before, *::after {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    /* Corpo: centralizado, sem scroll */
     html, body {
       width: 100%;
       height: 100%;
@@ -31,341 +28,63 @@
       user-select: none;
     }
 
-    /* Container do vídeo */
-    .video-container {
+    .canva-container {
       position: relative;
       width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #0a0a0a;
+      height: 0;
+      padding-top: 177.7778%;
+      padding-bottom: 0;
+      box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16);
+      overflow: hidden;
+      border-radius: 8px;
+      will-change: transform;
     }
 
-    /* Vídeo responsivo */
-    video {
-      max-width: 100%;
-      max-height: 100vh;
-      max-height: 100dvh;
+    .canva-container iframe {
+      position: absolute;
       width: 100%;
-      height: auto;
-      object-fit: contain;
-      display: block;
-      background: #0a0a0a;
-    }
-
-    /* Loading spinner */
-    .loading-indicator {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 5;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      transition: opacity 0.4s ease;
-    }
-
-    .loading-indicator.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid rgba(255, 255, 255, 0.15);
-      border-top-color: rgba(255, 255, 255, 0.7);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    .loading-text {
-      color: rgba(255, 255, 255, 0.5);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 14px;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Overlay para ativar som */
-    #sound-overlay {
-      display: none;
-      position: fixed;
+      height: 100%;
       top: 0;
       left: 0;
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .canva-credit {
+      position: fixed;
+      bottom: 8px;
       width: 100%;
-      height: 100%;
-      z-index: 10;
-      cursor: pointer;
-      background: rgba(0, 0, 0, 0.35);
-      justify-content: center;
-      align-items: center;
-      touch-action: manipulation;
-    }
-
-    #sound-overlay .icon {
-      width: 80px;
-      height: 80px;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      animation: pulse 1.5s ease-in-out infinite;
-      pointer-events: none;
-    }
-
-    #sound-overlay .icon svg {
-      width: 36px;
-      height: 36px;
-      fill: #fff;
-      pointer-events: none;
-    }
-
-    #sound-overlay .hint {
-      position: absolute;
-      bottom: 25%;
-      color: rgba(255, 255, 255, 0.6);
+      text-align: center;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 14px;
-      letter-spacing: 0.5px;
-      pointer-events: none;
-      animation: fadeInUp 0.8s ease forwards;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
     }
 
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.8; }
-      50% { transform: scale(1.1); opacity: 1; }
+    .canva-credit a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
     }
 
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .canva-credit a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Loading -->
-  <div class="loading-indicator" id="loading">
-    <div class="spinner"></div>
-    <span class="loading-text">Carregando...</span>
+  <div class="canva-container">
+    <iframe loading="lazy"
+      src="https://www.canva.com/design/DAHEKAtvWJ0/E56NzBPPu8yTvyO26CESEQ/watch?embed"
+      allowfullscreen="allowfullscreen"
+      allow="fullscreen">
+    </iframe>
   </div>
 
-  <!-- Overlay de som -->
-  <div id="sound-overlay">
-    <div class="icon">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-      </svg>
-    </div>
-    <span class="hint">Toque para ativar o som 🔊</span>
-  </div>
-
-  <!-- Vídeo -->
-  <div class="video-container">
-    <!--
-      autoplay + muted + playsinline = reprodução INSTANTÂNEA
-      em TODOS os navegadores e dispositivos modernos.
-      Navegadores exigem "muted" para permitir autoplay sem interação.
-    -->
-    <video id="video"
-      autoplay
-      muted
-      playsinline
-      webkit-playsinline
-      preload="auto"
-      x-webkit-airplay="deny"
-      disablePictureInPicture
-      disableRemotePlayback>
-      <source src="static/video.mp4" type="video/mp4">
-      <source src="static/video.webm" type="video/webm">
-      <source src="static/video.ogg" type="video/ogg">
-      Seu navegador não suporta a reprodução de vídeos HTML5.
-    </video>
-  </div>
-
-  <script>
-    (function () {
-      'use strict';
-
-      var video = document.getElementById('video');
-      var overlay = document.getElementById('sound-overlay');
-      var loading = document.getElementById('loading');
-      var soundEnabled = false;
-      var clickLock = false;
-
-      // ==========================================
-      // LOADING: esconde assim que o vídeo começa
-      // ==========================================
-      function hideLoading() {
-        if (loading && !loading.classList.contains('hidden')) {
-          loading.classList.add('hidden');
-          setTimeout(function () {
-            if (loading.parentNode) loading.parentNode.removeChild(loading);
-          }, 500);
-        }
-      }
-
-      video.addEventListener('playing', hideLoading);
-      video.addEventListener('canplay', hideLoading);
-      setTimeout(hideLoading, 4000); // fallback
-
-      // ==========================================
-      // OVERLAY: ativa o som ao clicar/tocar
-      // ==========================================
-      function enableSound(e) {
-        if (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          e.stopImmediatePropagation();
-        }
-
-        if (clickLock || soundEnabled) return;
-        clickLock = true;
-
-        video.muted = false;
-        soundEnabled = true;
-
-        // Garante que continua tocando (não pausa)
-        if (video.paused) {
-          video.play().catch(function () {});
-        }
-
-        // Fade out suave do overlay
-        overlay.style.transition = 'opacity 0.3s ease';
-        overlay.style.opacity = '0';
-        setTimeout(function () {
-          overlay.style.display = 'none';
-          overlay.style.opacity = '';
-          overlay.style.transition = '';
-        }, 300);
-
-        // Remove listeners
-        overlay.removeEventListener('click', enableSound);
-        overlay.removeEventListener('touchend', enableSound);
-
-        setTimeout(function () { clickLock = false; }, 500);
-      }
-
-      function showSoundOverlay() {
-        video.muted = true;
-        overlay.style.display = 'flex';
-        overlay.addEventListener('touchend', enableSound, { passive: false });
-        overlay.addEventListener('click', enableSound);
-      }
-
-      // ==========================================
-      // REPRODUÇÃO INSTANTÂNEA
-      //
-      // Estratégia:
-      // 1. O vídeo já tem autoplay + muted no HTML
-      //    → Isso faz o navegador iniciar IMEDIATAMENTE
-      // 2. Depois que está tocando, tentamos tirar mute
-      // 3. Se o navegador bloquear o som, mostramos overlay
-      // ==========================================
-      function initVideo() {
-        // O vídeo já deve estar tocando por causa do
-        // autoplay + muted no HTML. Mas garantimos:
-        if (video.paused) {
-          video.muted = true;
-          var p = video.play();
-          if (p && p.catch) p.catch(function () {});
-        }
-
-        // Aguarda o vídeo começar a tocar de fato
-        function onPlaying() {
-          video.removeEventListener('playing', onPlaying);
-          hideLoading();
-          tryUnmute();
-        }
-
-        if (!video.paused && video.readyState >= 2) {
-          // Já está tocando!
-          hideLoading();
-          tryUnmute();
-        } else {
-          video.addEventListener('playing', onPlaying);
-        }
-      }
-
-      // Tenta ativar o som automaticamente
-      function tryUnmute() {
-        video.muted = false;
-
-        // Alguns navegadores revertem o muted silenciosamente
-        setTimeout(function () {
-          if (video.muted) {
-            // Navegador bloqueou — mostra overlay
-            showSoundOverlay();
-          } else {
-            // Som ativou sem interação — sucesso!
-            soundEnabled = true;
-          }
-        }, 150);
-      }
-
-      // ==========================================
-      // PROTEÇÕES
-      // ==========================================
-
-      // Previne clique no vídeo pausar
-      video.addEventListener('click', function (e) {
-        e.preventDefault();
-        if (video.paused) video.play().catch(function () {});
-      });
-
-      // Se o vídeo pausar sozinho, retoma
-      video.addEventListener('pause', function () {
-        if (!document.hidden) {
-          setTimeout(function () {
-            if (video.paused && !document.hidden) {
-              video.play().catch(function () {});
-            }
-          }, 100);
-        }
-      });
-
-      // Retoma ao voltar para a aba
-      document.addEventListener('visibilitychange', function () {
-        if (!document.hidden && video.paused) {
-          video.play().catch(function () {});
-        }
-      });
-
-      // Tratamento de erro — tenta recarregar
-      video.addEventListener('error', function () {
-        hideLoading();
-        var src = video.querySelector('source');
-        if (src) {
-          var currentSrc = src.getAttribute('src');
-          if (currentSrc.indexOf('?') === -1) {
-            src.setAttribute('src', currentSrc + '?t=' + Date.now());
-            video.load();
-            video.play().catch(function () {});
-          }
-        }
-      });
-
-      // ==========================================
-      // INÍCIO
-      // ==========================================
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initVideo);
-      } else {
-        // Página já carregou — inicia agora
-        initVideo();
-      }
-    })();
-  </script>
+  <p class="canva-credit">
+    <a href="https://www.canva.com/design/DAHEKAtvWJ0/E56NzBPPu8yTvyO26CESEQ/watch?utm_content=DAHEKAtvWJ0&utm_campaign=designshare&utm_medium=embeds&utm_source=link" target="_blank" rel="noopener">Helena Emanuelly</a> de Danniell
+  </p>
 
 </body>
 
